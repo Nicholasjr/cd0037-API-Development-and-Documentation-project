@@ -5,6 +5,7 @@ from flask_cors import CORS
 import random
 
 
+
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
@@ -87,8 +88,7 @@ def create_app(test_config=None):
     @app.route('/question',  methods=['POST'])
     def post_question():
         try:
-            data = request.json
-            print(data)
+            data = request.get_json()
             question = Question(
                 question =data['question'],
                 answer = data['answer'],
@@ -107,13 +107,12 @@ def create_app(test_config=None):
     @app.route('/questions',  methods=['POST'])
     def search_question():
         try:
-            searchTerm = request.json['searchTerm']
+            searchTerm = request.get_json()['searchTerm']
             questions = Question.query.filter(Question.question.contains(searchTerm))
-            print(questions)
-
                 
             formatted_questions = [question.format() for question in questions]
-            if not bool(questions):
+            print('my name:', formatted_questions)
+            if formatted_questions == []:
                 abort(404)
                 
             return jsonify({

@@ -1,161 +1,87 @@
-# Frontend - Trivia API
+API REFERENCE
 
-`GET '/categories'`
+GETTING STARTED
 
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains an object of id: category_string key:value pairs.
+Pre-requisites and local development
+    Developers using this project should have python3, pip and node installed on theirlocal machines
 
-```json
-{
-  "categories": {
-    "1": "Science",
-    "2": "Art",
-    "3": "Geography",
-    "4": "History",
-    "5": "Entertainment",
-    "6": "Sports"
-  }
-}
-```
+Backend
+    From the backend folder, run:
+        pip3 install -r requirements.txt
+    To start the backend server, run:
+        export FLASK_APP=flaskr
+        export FLASK_ENV=development
+        flask run
+    The commands above puts the application in development and uses the __init__.py file in our flaskr folder
+    The applicationruns on http://127.0.0.1:5000/ by default
 
----
+Fronend
+    From the frontend folder, run:
+        npm install // only once to install dependencies
+        npm start
 
-`GET '/questions?page=${integer}'`
+Error Handling
+    Errors are returned as Json objects in theformat below:
+        {
+            'success': False,
+            'error': 422,
+            'message': 'cannot be processed'
+        }
+    The errors the api will return includes 400, 404, 422 and 500 
+    
 
-- Fetches a paginated set of questions, a total number of questions, all categories and current category string.
-- Request Arguments: `page` - integer
-- Returns: An object with 10 paginated questions, total questions, object including all categories, and current category string
+ENDPOINTS
 
-```json
-{
-  "questions": [
+GET '/categories'
+    Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
+    Request Arguments: None
+    Returns: An object with success and categories keys, that contains an object of id: category_string key: value pairs as shown below:
     {
-      "id": 1,
-      "question": "This is a question",
-      "answer": "This is an answer",
-      "difficulty": 5,
-      "category": 2
+      "1": "Science",
+      "2": "Art",
+      "3": "Geography",
+      "4": "History",
+      "5": "Entertainment",
+      "6": "Sports"
     }
-  ],
-  "totalQuestions": 100,
-  "categories": {
-    "1": "Science",
-    "2": "Art",
-    "3": "Geography",
-    "4": "History",
-    "5": "Entertainment",
-    "6": "Sports"
-  },
-  "currentCategory": "History"
-}
-```
-
----
-
-`GET '/categories/${id}/questions'`
-
-- Fetches questions for a cateogry specified by id request argument
-- Request Arguments: `id` - integer
-- Returns: An object with questions for the specified category, total questions, and current category string
-
-```json
-{
-  "questions": [
+    
+- GET '/questions'
+    Returns: An object with keys(success, categories, questions, total questions, current_category) that contain success value, categories dictionary, list of question objects with result paginated in a group of 10, and current cateory respectively
+    respone body:
+   [{'success': True, 'questions': [{'id': 13, 'question': 'What is the largest lake in Africa?', 'answer': 'Lake Victoria', 'category': 3, 'difficulty': 2}, {'id': 14, 'question': 'In which royal palace would you find the Hall of Mirrors?', 'answer': 'The Palace of Versailles', 'category': 3, 'difficulty': 3}], 'total_questions': 20, 'categories': {1: 'Science', 2: 'Art', 3: 'Geography', 4: 'History', 5: 'Entertainment', 6: 'Sports'}, 'current_category': 0}]
+   
+DELETE '/questions/<int:id>'
+    Given an id, it deletes question of the given id from the database if it exists
+    Returns: Success Value as an object
     {
-      "id": 1,
-      "question": "This is a question",
-      "answer": "This is an answer",
-      "difficulty": 5,
-      "category": 4
+        'success': True
     }
-  ],
-  "totalQuestions": 100,
-  "currentCategory": "History"
-}
-```
 
----
-
-`DELETE '/questions/${id}'`
-
-- Deletes a specified question using the id of the question
-- Request Arguments: `id` - integer
-- Returns: Does not need to return anything besides the appropriate HTTP status code. Optionally can return the id of the question. If you are able to modify the frontend, you can have it remove the question using the id instead of refetching the questions.
-
----
-
-`POST '/quizzes'`
-
-- Sends a post request in order to get the next question
-- Request Body:
-
-```json
-{
-    'previous_questions': [1, 4, 20, 15],
-    'quiz_category': 'current category'
- }
-```
-
-- Returns: a single new question object
-
-```json
-{
-  "question": {
-    "id": 1,
-    "question": "This is a question",
-    "answer": "This is an answer",
-    "difficulty": 5,
-    "category": 4
-  }
-}
-```
-
----
-
-`POST '/questions'`
-
-- Sends a post request in order to add a new question
-- Request Body:
-
-```json
-{
-  "question": "Heres a new question string",
-  "answer": "Heres a new answer string",
-  "difficulty": 1,
-  "category": 3
-}
-```
-
-- Returns: Does not return any new data
-
----
-
-`POST '/questions'`
-
-- Sends a post request in order to search for a specific question by search term
-- Request Body:
-
-```json
-{
-  "searchTerm": "this is the term the user is looking for"
-}
-```
-
-- Returns: any array of questions, a number of totalQuestions that met the search term and the current category string
-
-```json
-{
-  "questions": [
+POST /question
+    creates a new question in the database using the submitted question, answer, difficulty, and category parameters
+    Returns a succes object
     {
-      "id": 1,
-      "question": "This is a question",
-      "answer": "This is an answer",
-      "difficulty": 5,
-      "category": 5
+        'success': True
     }
-  ],
-  "totalQuestions": 100,
-  "currentCategory": "Entertainment"
-}
-```
+
+
+POST /questions
+    searches the database for a question that matches the search term inputed.
+    Returns an object with success value, list of questions that matched the search term, length of matched questions and current category
+    {'success': True, 'questions': [{'id': 5, 'question': "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?", 'answer': 'Maya Angelou', 'category': 4, 'difficulty': 2}, {'id': 6, 'question': 'What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?', 'answer': 'Edward Scissorhands', 'category': 5, 'difficulty': 3}], 'total_questions': 2, 'current_category': 0}
+    
+    
+GET '/categories/<int:id>/questions'
+    Find questions based on a particular category
+    Returns: An object with keys(success, categories, questions, total questions, current_category) that contain success value, categories dictionary, list of question objects with result paginated in a group of 10, and current category respectively
+    respone body:
+   [{'success': True, 'questions': [{'id': 13, 'question': 'What is the largest lake in Africa?', 'answer': 'Lake Victoria', 'category': 3, 'difficulty': 2}, {'id': 14, 'question': 'In which royal palace would you find the Hall of Mirrors?', 'answer': 'The Palace of Versailles', 'category': 3, 'difficulty': 3}], 'total_questions': 20, 'categories': {1: 'Science', 2: 'Art', 3: 'Geography', 4: 'History', 5: 'Entertainment', 6: 'Sports'}, 'current_category': 0}]
+    
+    
+POST '/quizzes'
+    This endpoint takes category and previous question parameters
+    Return a random questions within the given category, and that is not one of the previous questions and success value as an object
+    {
+        'success': True,
+        'question': {'id': 14, 'question': 'In which royal palace would you find the Hall of Mirrors?', 'answer': 'The Palace of Versailles', 'category': 3, 'difficulty': 3}
+    }
